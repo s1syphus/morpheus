@@ -15,6 +15,7 @@
 	   #:mult
 	   #:m+
 	   #:m-
+	   #:m.
 	   #:make-vector
 	   #:vec-x
 	   #:vec-y
@@ -24,9 +25,7 @@
 	   #:cross
 	   #:dot))
 
-
 (in-package #:linalg)
-
 
 (defclass matrix ()
   ((rows
@@ -61,7 +60,7 @@
           (progn
             (setf (matrix-data m)
                   (make-array (* (matrix-rows m) (matrix-cols m))
-			      :element-type 'single-float))
+			      :element-type 'real))
             (dotimes (i (matrix-rows m) m)
               (dotimes (j (matrix-cols m))
                 (setf (matrix-at m i j)
@@ -69,7 +68,7 @@
           (progn
             (setf (matrix-data m)
                   (make-array (* (matrix-rows m) (matrix-cols m))
-                              :element-type 'single-float
+                              :element-type 'real
                               :initial-element 0.0))
             m))))
 
@@ -112,10 +111,6 @@
 
 (defgeneric m* (op1 op2))
 
-
-
-
-
 (defmethod m* ((a matrix) (b matrix))
   (assert (= (matrix-cols a) (matrix-rows b)))
   (let ((result (make-instance 'matrix
@@ -135,16 +130,16 @@
 		 :cols (matrix-cols m)
 		 :data (map 'vector #'(lambda (i) (* i s)) (matrix-data m))))
 
-(defmethod m* ((m matrix) (s single-float))
+(defmethod m* ((m matrix) (s real))
   (make-instance 'matrix
 				 :rows (matrix-rows m)
 				 :cols (matrix-cols m)
-				 :data (map '(simple-array single-float 1) #'(lambda (i) (* i s)) (matrix-data m))))
+				 :data (map '(simple-array real 1) #'(lambda (i) (* i s)) (matrix-data m))))
 	
-(defmethod m* ((s single-float) (m matrix))
+(defmethod m* ((s real) (m matrix))
   (m* m s))
 
-(defmethod m* ((a single-float) (b single-float))
+(defmethod m* ((a real) (b real))
   (* a b))
 
 (defun mult (&rest operands)
@@ -211,7 +206,7 @@
 	  (make-instance 'matrix
 					 :rows (matrix-rows v)
 					 :cols (matrix-cols v)
-					 :data (map 'vector #'(lambda (i) (/ i s)) (matrix-data v)))
+					 :data (map '(simple-array real 1) #'(lambda (i) (/ i s)) (matrix-data v)))
 	  (copy-matrix v))))
 
 (defun is-threedimensional-vector? (v)
@@ -228,7 +223,7 @@
 				 :rows 3
 				 :cols 1
 				 :data (make-array 3
-								   :element-type 'single-float
+								   :element-type 'real
 								   :initial-contents (vector (- (* (vec-y a) (vec-z b))
 																(* (vec-y b) (vec-z a)))
 															 (- (* (vec-z a) (vec-x b))
