@@ -32,25 +32,22 @@
 							   :width width
 							   :height height))
 		 (image-data (zpng:data-array image))
-		 (delta (* 2 pi (/ (camera-fov (scene-camera scene)) 180.0)))
+		 (delta (* 2 pi (/ (camera-fov (scene-camera scene)) 360.0)))
 		 (maxx (tan delta))
-		 (minx (- maxx))
 		 (maxy (* maxx (/ (coerce height 'real) (coerce width 'real))))
 		 (miny (-maxy))
 		 (stepx (/ (* 2.0 maxx) (coerce width 'real)))
 		 (stepy (/ (* 2.0 maxy) (coerce height 'real))))
-	(do ((y  0.0 (+ y 1.0)))
+	(do ((y 0 (1= y))
+		 (y-coord maxy (- y-coord stepy)))
 		 ((>= y height))
-	  (do* ((x 0.0 (+ x 1.0))
-			(x-coord (+ minx (* x stepx)))
-			(y-coord (+ miny (* y stepy)))
+	  (do* ((x 0 (1+ x))
+			(x-coord minx (+x-coord stepx))
 		   (ray-dir (make-vector 3 :data (make-array 3
-													 :element-type 'real
-													 :initial-contents (vector x-coord y-coord 1.0)))
-					(make-vector 3 :data (make-array 3
 													 :element-type 'real
 													 :initial-contents (vector x-coord y-coord 1.0)))))
 			((>= x width))
+			(declare (ignore ray-dir))
 		(setf (aref image-data (truncate y) (truncate x) 1) (255)))
 	  (zpng:write-png image filename :if-exists :supersede)))
 

@@ -15,7 +15,8 @@
   ((center
 	 :initarg :center
 	 :initform (error ":center must be specified.")
-	 :type matrix)
+	 :type matrix
+	 :reader object-center)
 	(material
 	:reader object-material)))
 
@@ -24,7 +25,11 @@
 (defgeneric finalize (obj cam))
 
 (defmethod finalize ((obj object) (cam camera))
-  T)
+  (setf (slot-value obj 'center)
+		(world->view cam (slot-value obj 'center))))
+
+
+
 
 
 
