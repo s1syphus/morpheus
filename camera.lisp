@@ -32,7 +32,7 @@
 
 (defmethod initialize-instance :after ((cam camera) &key look-at)
   (setf (slot-value cam 'dir)
-		(normalized (m- (camera-pos cam) look-at))))
+		(normalized (m- look-at (camera-pos cam)))))
 
 
 

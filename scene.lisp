@@ -4,8 +4,9 @@
 
 (defpackage #:clrt-scene
   (:use :cl :clrt-camera :clrt-objects :linalg)
-  (:export :#scene
-		   :#add-object)
+  (:export #:scene
+		   #:add-object
+		   #:render))
 
 (in-package #:clrt-scene)
 
@@ -25,6 +26,7 @@
 (defun add-object (scene object)
   (push object (slot-value scene 'objects)))
 
+
 (defun render (scene width height filename)
   (let* ((image (make-instance 'zpng:png
 							   :width width
@@ -35,23 +37,22 @@
 		 (minx (- maxx))
 		 (maxy (* maxx (/ (coerce height 'real) (coerce width 'real))))
 		 (miny (-maxy))
-		 (stepx (/ (* 2 maxx) (coerce width 'real)))
-		 (stepy (/ (* 2 maxy) (coerce height 'real))))
-	(do ((y  0 (1+ y)))
+		 (stepx (/ (* 2.0 maxx) (coerce width 'real)))
+		 (stepy (/ (* 2.0 maxy) (coerce height 'real))))
+	(do ((y  0.0 (+ y 1.0)))
 		 ((>= y height))
-	  (do* ((x 0 (1+ x))
+	  (do* ((x 0.0 (+ x 1.0))
 			(x-coord (+ minx (* x stepx)))
 			(y-coord (+ miny (* y stepy)))
 		   (ray-dir (make-vector 3 :data (make-array 3
 													 :element-type 'real
-													 :initial-contents (vector x-coord y-coord 1)))
+													 :initial-contents (vector x-coord y-coord 1.0)))
 					(make-vector 3 :data (make-array 3
 													 :element-type 'real
-													 :initial-contents (vector x-coord y-coord 1)))))
-			((>= x maxx))
-		(setf (aref image-data y x 2) (255)))
+													 :initial-contents (vector x-coord y-coord 1.0)))))
+			((>= x width))
+		(setf (aref image-data (truncate y) (truncate x) 1) (255)))
 	  (zpng:write-png image filename :if-exists :supersede)))
-
 
 
 
