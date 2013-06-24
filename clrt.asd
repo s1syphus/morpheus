@@ -15,5 +15,5 @@
 				(:file "sphere" :depends-on ("linalg" "objects"))
 				(:file "ray" :depends-on ("linalg))))
 
-
+;;;;1:05 in video 2.1.1
 
