@@ -3,7 +3,7 @@
 ;;;;
 
 (defpackage #:clrt-objects
-  (:use #:cl #:linalg #:clrt-camera)
+  (:use #:cl #:linalg #:clrt-camera #:clrt-ray)
   (:export #:object
 		   #:object-material
 		   #:intersects
@@ -20,7 +20,7 @@
 	(material
 	:reader object-material)))
 
-(defgeneric intersects (obj ray))
+(defgeneric intersects (obj ray &key lower-bound shadow-feeler))
 
 (defgeneric finalize (obj cam))
 
